@@ -1,33 +1,42 @@
 {
-  "name": "node-red-contrib-regression",
-  "version": "1.0.0",
-  "description": "A Node Red node to perform least squares regression fitting on a flow.",
-  "dependencies": {
-    "regression": "2.*"
-  },
-  "author": {
-    "name": "Dean Cording",
-    "email": "dean@cording.id.au"
-  },
-  "license": "MIT",
-  "keywords": [
-    "node-red",
-    "regression",
-    "linear",
-    "polynomial",
-    "exponential"
-  ],
-  "bugs": {
-    "url": "https://github.com/DeanCording/node-red-contrib-regression/issues"
-  },
-  "homepage": "https://github.com/DeanCording/node-red-contrib-regression",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/DeanCording/node-red-contrib-regression.git"
-  },
-  "node-red": {
-    "nodes": {
-      "regression": "regression.js"
+    "name": "node-red-contrib-regression",
+    "version": "1.0.0",
+    "description": "A Node Red node to perform least squares regression fitting on a flow.",
+    "scripts": {
+        "test": "mocha regression.spec.js",
+        "start": "node regression.js"
+    },
+    "dependencies": {
+        "regression": "2.*"
+    },
+    "devDependencies": {
+        "chai": "^4.3.7",
+        "csv-parser": "^3.0.0",
+        "mocha": "^10.2.0"
+    },
+    "author": {
+        "name": "Dean Cording",
+        "email": "dean@cording.id.au"
+    },
+    "license": "MIT",
+    "keywords": [
+        "node-red",
+        "regression",
+        "linear",
+        "polynomial",
+        "exponential"
+    ],
+    "bugs": {
+        "url": "https://github.com/DeanCording/node-red-contrib-regression/issues"
+    },
+    "homepage": "https://github.com/DeanCording/node-red-contrib-regression",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DeanCording/node-red-contrib-regression.git"
+    },
+    "node-red": {
+        "nodes": {
+            "regression": "regression.js"
+        }
     }
-  }
 }
