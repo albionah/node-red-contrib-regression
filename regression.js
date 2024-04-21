@@ -97,8 +97,8 @@ module.exports = function(RED) {
         };
 
         onInput(msg) {
-            var x = RED.util.evaluateNodeProperty(this.xInputField, this.xInputFieldType, node, msg);
-            var y = RED.util.evaluateNodeProperty(this.yInputField, this.yInputFieldType, node, msg);
+            var x = RED.util.evaluateNodeProperty(this.xInputField, this.xInputFieldType, this, msg);
+            var y = RED.util.evaluateNodeProperty(this.yInputField, this.yInputFieldType, this, msg);
 
             if (((x != undefined) && (y != undefined)) || Array.isArray(x)) {
                 this.saveData(x,y);
@@ -125,10 +125,10 @@ module.exports = function(RED) {
                 if (!isNaN(this.function.equation[0])) {
                     delete this.function.points;
                     this.status({text:this.function.string});
-                    setNodeProperty(this.functionOutputField, this.functionOutputFieldType, node, msg, this.function);
+                    setNodeProperty(this.functionOutputField, this.functionOutputFieldType, this, msg, this.function);
 
                     if (!Array.isArray(x)) {
-                        setNodeProperty(this.yOutputField, this.yOutputFieldType, node, msg,
+                        setNodeProperty(this.yOutputField, this.yOutputFieldType, this, msg,
                                         this.function.predict(x)[1]);
                     }
                 }
@@ -139,7 +139,7 @@ module.exports = function(RED) {
                 x = parseFloat(x);
 
                 if (!isNaN(x) && (this.function != undefined)) {
-                    setNodeProperty(this.yOutputField, this.yOutputFieldType, node, msg,
+                    setNodeProperty(this.yOutputField, this.yOutputFieldType, this, msg,
                                     this.function.predict(x)[1]);
                     this.send(msg);
                 }

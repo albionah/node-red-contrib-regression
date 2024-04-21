@@ -41,8 +41,8 @@ class CSVTransform extends Transform {
 describe('Regression', () => {
     const regressionFn = (data) => regression.linear(data, { precision: 100 });
 
-    describe('when graph raises', () => {
-        it('should be negative', async () => {
+    describe('when graph is slowly raising but suddenly is dropping', () => {
+        it('should catch just the drop', async () => {
             const X = 0;
             const Y = 1;
             const data = (await readCsv());//.slice(281370-1800, 281370);
@@ -56,13 +56,14 @@ describe('Regression', () => {
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
             const result = improvedRegression(regressionFn, data.slice(start, end));
+            result.pointsNumber = result.points.length;
             delete result.points;
             console.log(result);
             expect(result.equation[0]).to.be.lessThan(-0);
         });
     });
 
-    describe('when graph drops', () => {
+    describe('when graph is dropping but then raising slowly', () => {
         it('should be positive', async () => {
             const X = 0;
             const Y = 1;
@@ -77,6 +78,7 @@ describe('Regression', () => {
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
             const result = improvedRegression(regressionFn, data.slice(start, end));
+            result.pointsNumber = result.points.length;
             delete result.points;
             console.log(result);
             expect(result.equation[0]).to.be.greaterThan(0);
@@ -84,7 +86,7 @@ describe('Regression', () => {
     });
 
     describe('when graph is stable', () => {
-        it('should be almost zero', async () => {
+        it.only('should be almost zero', async () => {
             const X = 0;
             const Y = 1;
             const data = (await readCsv());//.slice(281370-1800, 281370);
@@ -105,7 +107,7 @@ describe('Regression', () => {
     });
 
     describe('when graph drops and then raises', () => {
-        it.only('should be positive', async () => {
+        it('should be positive', async () => {
             const X = 0;
             const Y = 1;
             const data = (await readCsv());//.slice(281370-1800, 281370);
@@ -119,6 +121,7 @@ describe('Regression', () => {
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
             const result = improvedRegression(regressionFn, data.slice(start, end));
+            result.pointsNumber = result.points.length;
             delete result.points;
             console.log(result);
             expect(result.equation[0]).to.be.greaterThan(0);
