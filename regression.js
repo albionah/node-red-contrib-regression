@@ -103,22 +103,6 @@ module.exports = function(RED) {
             if (((x != undefined) && (y != undefined)) || Array.isArray(x)) {
                 this.saveData(x,y);
 
-                const Y = 1;
-                let minIndex = this.data.length - 1;
-                let maxIndex = this.data.length - 1;
-                for (let i = 0; i < this.data.length - 1; i++) {
-                    if (this.data[i][Y] <= this.data[minIndex][Y]) {
-                        minIndex = this.data[i];
-                    }
-                    if (this.data[i][Y] >= this.data[maxIndex][Y]) {
-                        maxIndex = this.data[i];
-                    }
-                }
-                let startIndex = Math.max(minIndex, maxIndex);
-                this.data.reduce((prev, curr) => {
-                    return prev[Y] < curr[Y] ? prev : curr;
-                });
-
                 const regressionFn = (data) => regression[this.regressionType](data, this.options);
                 this.function = improvedRegression(regressionFn, this.data);
 
