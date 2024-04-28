@@ -4,10 +4,12 @@
         color: '#DAB881',
         defaults: {
             name: {value:""},
-            dataSetSize: {value: 0, validate: function(v) { return RED.validators.number(v) && (v >= 0); }, required: true},
+            maxDataSetSize: {value: 0, validate: function(v) { return RED.validators.number(v) && (v >= 0); }, required: true},
             regressionType: {value: "linear", required: true},
             polynomialOrder: {value: 2, validate: function(v) { return RED.validators.number(v) && (v >= 1); }, required: true},
             precision: {value: 2, validate: function(v) { return RED.validators.number(v) && (v >= 1); }, required: true},
+            lengthMultiplier: {value: "1", required: true},
+            lengthMultiplierType: {value: "num"},
             xInputField: {value: "payload.x", required: true},
             xInputFieldType: {value: "msg"},
             yInputField: {value: "payload.y", required: true},
@@ -27,9 +29,15 @@
             return this.name||"regression";
         },
         oneditprepare: function() {
-        
+
             var noneType = {value:"none",label:"None",hasValue:false};
-            
+
+            $("#node-input-lengthMultiplier").typedInput({
+                default: 'num',
+                types: ['num','env','jsonata'],
+                typeField: $("#node-input-lengthMultiplierType")
+            });
+
             if (!this.xInputField) {
                 this.xInputFieldType = 'payload.x';
             }
@@ -110,13 +118,18 @@
         <input type="text" id="node-input-precision" placeholder="2">
     </div>
     <div class="form-row">
-        <label for="node-input-dataSetSize"><i class="icon-tag"></i> Data Set Size</label>
-        <input type="text" id="node-input-dataSetSize" placeholder="0">
+        <label for="node-input-maxDataSetSize"><i class="icon-tag"></i> Data Set Size</label>
+        <input type="text" id="node-input-maxDataSetSize" placeholder="0">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lengthMultiplier"><i class="icon-tag"></i> Length Multiplier</label>
+        <input type="text" id="node-input-lengthMultiplier" placeholder="r2">
+        <input type="hidden" id="node-input-lengthMultiplierType">
     </div>
     <div class="form-row">
         <label for="node-input-xInputField"><i class="fa fa-edit"></i> X Input Property</label>
         <input type="text" id="node-input-xInputField" placeholder="X Input" style="width:250px;">
-        <input type="hidden" id="node-input-yInputFieldType">
+        <input type="hidden" id="node-input-xInputFieldType">
     </div>
     <div class="form-row">
         <label for="node-input-yInputField"><i class="fa fa-edit"></i> Y Input Property</label>
@@ -141,7 +154,7 @@
 
 <script type="text/x-red" data-help-name="regression">
     <p>Calculates a line equation from a series of [x,y] points or predicts a point given an x value
-    using the linear regression function in the 
+    using the linear regression function in the
     <a href="https://www.npmjs.com/package/regression">regression-js</a> library.</p>
 
     <h3>Properties</h3>
@@ -199,22 +212,22 @@
 
     <h3>Details</h3>
         <p>If <code>x input property</code> and <code>y input property</code> both contain values then
-        they are saved as a point into the data set.  The <code>x input property</code> may also 
+        they are saved as a point into the data set.  The <code>x input property</code> may also
         contain an array of <code>[x,y]</code> points which will be saved into the data set.  If <code>data set size</code> is greater that 0 then the size of the data set will be
         limited to the numer of elements specified, with the oldest elements dropped first.</p>
-        
+
         <p>Once enough points are stored in the data set, an equation will be generated
         using linear regression.  This equation can be output to the <code>function output property</code> as an object containing the coefficients of the equation, a text representation of the equation, the coefficient of determination, and a function that implements the equation.</p>
-        
+
         <p>For every input containing a value in the <code>x input property</code>, a value for y
         will be calculated and placed in the <code>y output property</code>.  It is possible to set
         both <code>y input property</code> and <code>y output property</code> to the same property,
         in which case the y value input will be used to refine the linear regression and then replace
         with the calculated y value output.</p>
-        
-        <p>Sending a msg without a <code>x input property</code> value will clear the data set and 
+
+        <p>Sending a msg without a <code>x input property</code> value will clear the data set and
         the line equation.</p>
 
 
-        
+
 </script>

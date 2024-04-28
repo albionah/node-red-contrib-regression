@@ -36,7 +36,10 @@ class CSVTransform extends Transform {
 }
 
 
+const lengthMultiplierFunction = (length, callback) => {
 
+    callback(undefined, Math.log10(100 + length) - 1);
+};
 
 describe('Regression', () => {
     const regressionFn = (data) => regression.linear(data, { precision: 100 });
@@ -55,7 +58,7 @@ describe('Regression', () => {
             console.log("points indeces", start, end);
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
-            const result = improvedRegression(regressionFn, data.slice(start, end));
+            const result = improvedRegression(regressionFn, data.slice(start, end), lengthMultiplierFunction);
             result.pointsNumber = result.points.length;
             delete result.points;
             console.log(result);
@@ -77,7 +80,7 @@ describe('Regression', () => {
             console.log("points indeces", start, end);
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
-            const result = improvedRegression(regressionFn, data.slice(start, end));
+            const result = improvedRegression(regressionFn, data.slice(start, end), lengthMultiplierFunction);
             result.pointsNumber = result.points.length;
             delete result.points;
             console.log(result);
@@ -86,7 +89,7 @@ describe('Regression', () => {
     });
 
     describe('when graph is stable', () => {
-        it.only('should be almost zero', async () => {
+        it('should be almost zero', async () => {
             const X = 0;
             const Y = 1;
             const data = (await readCsv());//.slice(281370-1800, 281370);
@@ -99,7 +102,7 @@ describe('Regression', () => {
             console.log("points indeces", start, end);
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
-            const result = improvedRegression(regressionFn, data.slice(start, end));
+            const result = improvedRegression(regressionFn, data.slice(start, end), lengthMultiplierFunction);
             delete result.points;
             console.log(result);
             expect(result.equation[0]).to.be.lessThan(Math.abs(0.0001));
@@ -120,7 +123,7 @@ describe('Regression', () => {
             console.log("points indeces", start, end);
             console.log("points", new Date(data[start][X]*1000), new Date(data[end][X]*1000));
             console.log("points values", data[start][Y], data[end][Y]);
-            const result = improvedRegression(regressionFn, data.slice(start, end));
+            const result = improvedRegression(regressionFn, data.slice(start, end), lengthMultiplierFunction);
             result.pointsNumber = result.points.length;
             delete result.points;
             console.log(result);

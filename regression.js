@@ -35,12 +35,13 @@ module.exports = function(RED) {
         constructor(config) {
             RED.nodes.createNode(this, config);
 
-            this.dataSetMinSize = ((config.dataSetMinSize != undefined) ? config.dataSetMinSize : 0) * 1;
-            this.dataSetMaxSize = ((config.dataSetMaxSize != undefined) ? config.dataSetMaxSize : 0) * 1;
+            this.maxDataSetSize = ((config.maxDataSetSize != undefined) ? config.maxDataSetSize : 0) * 1;
             this.regressionType = config.regressionType || "linear";
             this.options = {};
             this.options.order = Math.round((config.polynomialOrder || 2) * 1);
             this.options.precision = Math.round((config.precision || 2) * 1);
+            this.lengthMultiplier = config.lengthMultiplier ?? 1;
+            this.lengthMultiplierType = config.lengthMultiplierType || 'num';
             this.xInputField = config.xInputField || "payload.x";
             this.xInputFieldType = config.xInputFieldType || "msg";
             this.yInputField = config.yInputField || "payload.y";
@@ -77,7 +78,7 @@ module.exports = function(RED) {
                 if (Array.isArray(x)) {
                     x.forEach(function (element) {
                         if (Array.isArray(element)) {
-                            saveData(element[0],element[1]);
+                            this.saveData(element[0],element[1]);
                         }
                     });
                 } else {
@@ -86,8 +87,8 @@ module.exports = function(RED) {
                     if (!isNaN(x) && !isNaN(y)) {
                         this.data.push([x,y]);
 
-                        if (this.dataSetSize > 0) {
-                            while (this.data.length > this.dataSetSize) {
+                        if (this.maxDataSetSize > 0) {
+                            while (this.data.length > this.maxDataSetSize) {
                                 this.data.shift();
                             }
                         }
@@ -100,14 +101,16 @@ module.exports = function(RED) {
             var x = RED.util.evaluateNodeProperty(this.xInputField, this.xInputFieldType, this, msg);
             var y = RED.util.evaluateNodeProperty(this.yInputField, this.yInputFieldType, this, msg);
 
+            var lengthMultiplierFunction = (length, callback) => RED.util.evaluateNodeProperty(this.lengthMultiplier, this.lengthMultiplierType, this, {...msg, length}, callback);
+
             if (((x != undefined) && (y != undefined)) || Array.isArray(x)) {
                 this.saveData(x,y);
 
                 const regressionFn = (data) => regression[this.regressionType](data, this.options);
-                this.function = improvedRegression(regressionFn, this.data);
+                this.function = improvedRegression(regressionFn, this.data, lengthMultiplierFunction);
 
                 if (!isNaN(this.function.equation[0])) {
-                    delete this.function.points;
+                    //delete this.function.points;
                     this.status({text:this.function.string});
                     setNodeProperty(this.functionOutputField, this.functionOutputFieldType, this, msg, this.function);
 
