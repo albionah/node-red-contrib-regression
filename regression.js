@@ -17,7 +17,6 @@
 module.exports = function(RED) {
 
     var regression = require('regression');
-    var util = require('util');
     var improvedRegression = require('./improvedRegression');
 
     var setNodeProperty = function(field, type, node, msg, value) {
@@ -97,17 +96,26 @@ module.exports = function(RED) {
             }
         };
 
-        onInput(msg) {
+        async onInput(msg) {
             var x = RED.util.evaluateNodeProperty(this.xInputField, this.xInputFieldType, this, msg);
             var y = RED.util.evaluateNodeProperty(this.yInputField, this.yInputFieldType, this, msg);
 
-            var lengthMultiplierFunction = (length, callback) => RED.util.evaluateNodeProperty(this.lengthMultiplier, this.lengthMultiplierType, this, {...msg, length}, callback);
+            var lengthMultiplierFunction = (length, callback) => {
+                if (this.lengthMultiplierType === "str") {
+                    const lengthMultiplierWithReplacedLength = this.lengthMultiplier.replace("length", length);
+                    const res = eval(lengthMultiplierWithReplacedLength);
+                    return res;
+                } else {
+                    const res = RED.util.evaluateNodeProperty(this.lengthMultiplier, this.lengthMultiplierType, this, {...msg, length}, callback);
+                    return res;
+                }
+            }
 
             if (((x != undefined) && (y != undefined)) || Array.isArray(x)) {
                 this.saveData(x,y);
 
                 const regressionFn = (data) => regression[this.regressionType](data, this.options);
-                this.function = improvedRegression(regressionFn, this.data, lengthMultiplierFunction);
+                this.function = await improvedRegression(regressionFn, this.data, lengthMultiplierFunction);
 
                 if (!isNaN(this.function.equation[0])) {
                     //delete this.function.points;
@@ -116,7 +124,7 @@ module.exports = function(RED) {
 
                     if (!Array.isArray(x)) {
                         setNodeProperty(this.yOutputField, this.yOutputFieldType, this, msg,
-                                        this.function.predict(x)[1]);
+                            this.function.predict(x)[1]);
                     }
                 }
                 if (!this.resultOnly) {
@@ -127,7 +135,7 @@ module.exports = function(RED) {
 
                 if (!isNaN(x) && (this.function != undefined)) {
                     setNodeProperty(this.yOutputField, this.yOutputFieldType, this, msg,
-                                    this.function.predict(x)[1]);
+                        this.function.predict(x)[1]);
                     this.send(msg);
                 }
             } else {

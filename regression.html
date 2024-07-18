@@ -1,40 +1,54 @@
 <script type="text/javascript">
-    RED.nodes.registerType('regression',{
+    RED.nodes.registerType('regression', {
         category: 'function',
         color: '#DAB881',
         defaults: {
-            name: {value:""},
-            maxDataSetSize: {value: 0, validate: function(v) { return RED.validators.number(v) && (v >= 0); }, required: true},
-            regressionType: {value: "linear", required: true},
-            polynomialOrder: {value: 2, validate: function(v) { return RED.validators.number(v) && (v >= 1); }, required: true},
-            precision: {value: 2, validate: function(v) { return RED.validators.number(v) && (v >= 1); }, required: true},
-            lengthMultiplier: {value: "1", required: true},
-            lengthMultiplierType: {value: "num"},
-            xInputField: {value: "payload.x", required: true},
-            xInputFieldType: {value: "msg"},
-            yInputField: {value: "payload.y", required: true},
-            yInputFieldType: {value: "msg"},
-            yOutputField: {value: "payload.y", required: true},
-            yOutputFieldType: {value: "msg"},
-            functionOutputField: {value: "function", validate: function(v) {
-                return ((v.length > 0) || (this.functionOutputFieldType == 'none'));
-            } },
-            functionOutputFieldType: {value: "none"},
-            resultOnly: {value:true}
+            name: { value: "" },
+            maxDataSetSize: {
+                value: 0, validate: function (v) {
+                    return RED.validators.number(v) && (v >= 0);
+                }, required: true
+            },
+            regressionType: { value: "linear", required: true },
+            polynomialOrder: {
+                value: 2, validate: function (v) {
+                    return RED.validators.number(v) && (v >= 1);
+                }, required: true
+            },
+            precision: {
+                value: 2, validate: function (v) {
+                    return RED.validators.number(v) && (v >= 1);
+                }, required: true
+            },
+            lengthMultiplier: { value: "1", required: true },
+            lengthMultiplierType: { value: "num" },
+            xInputField: { value: "payload.x", required: true },
+            xInputFieldType: { value: "msg" },
+            yInputField: { value: "payload.y", required: true },
+            yInputFieldType: { value: "msg" },
+            yOutputField: { value: "payload.y", required: true },
+            yOutputFieldType: { value: "msg" },
+            functionOutputField: {
+                value: "function", validate: function (v) {
+                    return ((v.length > 0) || (this.functionOutputFieldType == 'none'));
+                }
+            },
+            functionOutputFieldType: { value: "none" },
+            resultOnly: { value: true }
         },
-        inputs:1,
-        outputs:1,
+        inputs: 1,
+        outputs: 1,
         icon: "function.png",
-        label: function() {
-            return this.name||"regression";
+        label: function () {
+            return this.name || "regression";
         },
-        oneditprepare: function() {
+        oneditprepare: function () {
 
-            var noneType = {value:"none",label:"None",hasValue:false};
+            var noneType = { value: "none", label: "None", hasValue: false };
 
             $("#node-input-lengthMultiplier").typedInput({
                 default: 'num',
-                types: ['num','env','jsonata'],
+                types: ['num', 'env', 'jsonata', 'str'],
                 typeField: $("#node-input-lengthMultiplierType")
             });
 
@@ -46,7 +60,7 @@
             }
             $("#node-input-xInputField").typedInput({
                 default: 'msg',
-                types: ['msg','flow','global'],
+                types: ['msg', 'flow', 'global'],
                 typeField: $("#node-input-xInputFieldType")
             });
 
@@ -58,7 +72,7 @@
             }
             $("#node-input-yInputField").typedInput({
                 default: 'msg',
-                types: ['msg','flow','global'],
+                types: ['msg', 'flow', 'global'],
                 typeField: $("#node-input-yInputFieldType")
             });
 
@@ -70,7 +84,7 @@
             }
             $("#node-input-yOutputField").typedInput({
                 default: 'msg',
-                types: ['msg','flow','global'],
+                types: ['msg', 'flow', 'global'],
                 typeField: $("#node-input-yOutputFieldType")
             });
 
@@ -82,12 +96,12 @@
             }
             $("#node-input-functionOutputField").typedInput({
                 default: 'none',
-                types: [noneType,'msg','flow','global'],
+                types: [noneType, 'msg', 'flow', 'global'],
                 typeField: $("#node-input-functionOutputFieldType")
             });
 
         },
-        oneditsave: function() {
+        oneditsave: function () {
             this.regressionType = $("#node-input-regressionType").val();
 
         }
@@ -227,7 +241,6 @@
 
         <p>Sending a msg without a <code>x input property</code> value will clear the data set and
         the line equation.</p>
-
 
 
 </script>
