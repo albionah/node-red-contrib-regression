@@ -1,19 +1,12 @@
 async function improvedRegression(regressionFn, data, lengthMultiplierFunction) {
+    const X = 0;
+    const Y = 1;
+
     if (data.length > 5) {
         let results = [];
         for (let i = 0; i < data.length - 5; i++) {
             const result = regressionFn([...data].splice(i));
-            var lengthMultiplierValue;
-            await new Promise((resolve, reject) => {
-                lengthMultiplierFunction(result.points.length, (err, value) => {
-                    if (err) {
-                        reject(Error(`invalid length multiplier property: ${err.message}`));
-                    } else {
-                        lengthMultiplierValue = value;
-                        resolve();
-                    }
-                });
-            });
+            const lengthMultiplierValue = lengthMultiplierFunction(result.points.length);
 
             result.r2Length = result.r2 * lengthMultiplierValue;
             results.push(result);

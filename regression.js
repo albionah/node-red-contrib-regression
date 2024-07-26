@@ -100,13 +100,13 @@ module.exports = function(RED) {
             var x = RED.util.evaluateNodeProperty(this.xInputField, this.xInputFieldType, this, msg);
             var y = RED.util.evaluateNodeProperty(this.yInputField, this.yInputFieldType, this, msg);
 
-            var lengthMultiplierFunction = (length, callback) => {
+            var lengthMultiplierFunction = (length) => {
                 if (this.lengthMultiplierType === "str") {
                     const lengthMultiplierWithReplacedLength = this.lengthMultiplier.replace("length", length);
                     const res = eval(lengthMultiplierWithReplacedLength);
                     return res;
                 } else {
-                    const res = RED.util.evaluateNodeProperty(this.lengthMultiplier, this.lengthMultiplierType, this, {...msg, length}, callback);
+                    const res = RED.util.evaluateNodeProperty(this.lengthMultiplier, this.lengthMultiplierType, this, msg);
                     return res;
                 }
             }
